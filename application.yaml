@@ -7,3 +7,17 @@ mysql:
   password: wendadawen
   userName: root
   databaseName: wecqu
+
+# 是否使用代理池，用于网站被封ip，可在线调整
+proxy:
+  vpn: false
+  jwc: false
+  lib: false
+  card: false
+  graduated: false
+  cas: false
+  my: false
+  youth: false
+  proxy_server: frp.sramar.com:9999
+  proxy_user: xproxy
+  proxy_pwd: Xproxy_xuan

@@ -11,19 +11,20 @@ var conf *viper.Viper
 var (
 	ServerConfig *viper.Viper
 	MysqlConfig  *viper.Viper
+	ProxyConfig  *viper.Viper
 )
 
 func init() {
 	conf = viper.New()
 	conf.AddConfigPath("./")
-	conf.SetConfigName("application")
+	conf.SetConfigName("../../application")
 	err := conf.ReadInConfig()
 	if err != nil {
-		log.Fatalln("Read Config Error: ", err)
+		log.Fatalf("[Read Config] %+v\n", err.Error())
 	}
 	conf.WatchConfig()
 	conf.OnConfigChange(func(in fsnotify.Event) {
-		log.Println("Configuration Changed:", in.Name)
+		log.Printf("[Configuration Changed] %+v\n", in.Name)
 		setting()
 	})
 	setting()
@@ -32,4 +33,5 @@ func init() {
 func setting() {
 	ServerConfig = conf.Sub("server")
 	MysqlConfig = conf.Sub("mysql")
+	ProxyConfig = conf.Sub("proxy")
 }
