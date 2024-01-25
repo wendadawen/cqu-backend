@@ -23,17 +23,17 @@ func (this *CardService) BalanceByCas(StuId string, CasPwd string) (*bo.BalanceD
 	}
 	Card, err := card.NewCardByCas(cardAccount)
 	if err != nil {
-		log.Printf("[CardService BalanceByCas] Account=%s\n", StuId)
+		log.Printf("[CardService BalanceByCas NewCardByCas Error] Account=%s\n", StuId)
 		return nil, err
 	}
 	balance, err := Card.Balance() // TODO 到这里
 	if err != nil {
-		log.Printf("[CardService BalanceByCas] Account=%s\n", StuId)
+		log.Printf("[CardService BalanceByCas Balance Error] Account=%s\n", StuId)
 		return nil, err
 	}
 	balance.Record, err = Card.Record()
 	if err != nil {
-		log.Printf("[CardService BalanceByCas] Account=%s\n", StuId)
+		log.Printf("[CardService BalanceByCas Record Error] Account=%s\n", StuId)
 		return nil, err
 	}
 	return balance, nil

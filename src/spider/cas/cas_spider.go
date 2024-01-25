@@ -3,6 +3,7 @@ package cas
 import (
 	"cqu-backend/src/object"
 	"github.com/go-resty/resty/v2"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -34,19 +35,22 @@ func (this *authentication) Login() error {
 	}
 	res, _ := this.Do(http.MethodGet, validCodeUrl+this.casId, nil) // 验证码
 	if strings.Contains(res, "true") {
+		log.Printf("[authentication Login Do1 Error] %+v\n", object.CasValidcode)
 		return object.CasValidcode
 	}
 	res, err := this.Do(http.MethodGet, loginUrl, nil) // 请求表单数据
 	if err != nil {
+		log.Printf("[authentication Login Do2 Error] %+v\n", err)
 		return err
 	}
 	payload, err := ParseAndBuildLoginPayload(res, this.casId, this.pwd)
 	if err != nil {
+		log.Printf("[authentication Login ParseAndBuildLoginPayload Error] %+v\n", err)
 		return err
 	}
 	res, err = this.Do(http.MethodPost, loginUrl, payload) // 登录
 	if err != nil {
-		//fmt.Printf("%+v\n", err)
+		log.Printf("[authentication Login Do3 Error] %+v\n", err)
 		return err
 	}
 	err = checkLoginResult(res, loginResponseMap)
@@ -58,6 +62,7 @@ func (this *authentication) Login() error {
 		})
 	}*/
 	if err != nil {
+		log.Printf("[authentication Login checkLoginResult Error] %+v\n", err)
 		return err
 	}
 	this.isLogin = true

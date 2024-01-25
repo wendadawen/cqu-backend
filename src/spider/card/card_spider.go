@@ -8,6 +8,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -77,16 +78,19 @@ func (this *cardTemplate) Do(method string, urlPath string, payload map[string]s
 func (this *cardTemplate) Balance() (*bo.BalanceData, error) {
 	err := this.Login()
 	if err != nil {
+		log.Printf("[SpiderCard Balance Login Error] %+v\n", err)
 		return nil, err
 	}
 	res, err := this.Do(http.MethodPost, cardUrl+cardNcBalanceUrl, map[string]string{"json": "true"})
 	if err != nil || !strings.Contains(res, `"respInfo\":\"处理成功`) {
+		log.Printf("[SpiderCard Balance Do Error] %+v\n", err)
 		return nil, object.CardBalanceError
 	}
 	res = strings.ReplaceAll(res, `\`, "")
 	res = res[1 : len(res)-1]
 	objs := gjson.Get(res, "objs").Array()
 	if len(objs) == 0 {
+		log.Printf("[SpiderCard Balance Get Error] %+v\n", object.CardBalanceError)
 		return nil, object.CardBalanceError
 	}
 	balance := objs[0].Get("acctAmt").Int()

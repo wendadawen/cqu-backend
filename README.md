@@ -1,1 +1,46 @@
 # 重庆大学WeCQU微信小程序后端程序
+## 程序架构
+- src：源代码
+  - bo：代码中临时需要的一些结构体
+    - card_bo.go：一卡通需要的结构体
+  - config：配置
+    - setting：使用单独的setting包是为了初始化
+      - config_global.go：用viper读取application.yaml文件
+    - mysql_config.go：读取mysql数据库的一些配置
+    - server_config.go：读取服务器的一起配置
+  - dao：数据层
+    - db：数据库来源
+      - datasource.go：用xorm初始化一个mysql的数据库操作对象
+    - model：数据库对应的数据模型
+      - student.go：学生表的结构体
+    - student_dao.go：对学生表的操作
+  - object：一些其他方面的操作
+    - error.go：错误处理
+    - map.go：错误映射
+    - result.go：接口统一回复结构体
+  - service：服务层
+    - card_service.go：校园卡服务
+    - student_service.go：学生服务
+  - spider：爬虫程序
+    - card：校园卡爬虫
+      - card_spider_by_cas.go：使用统一认证登录校园卡
+      - card_spider.go：获取校园卡的信息
+    - cas：统一认证爬虫
+      - api_cas_spider.go：统一认证需要提供的api
+      - cas_spider.go：统一认证登录接口实现
+      - url_cas_spider.go：统一认证需要用到的一些网站
+      - utils_cas_spider.go：统一认证需要的一些工具
+    - api.go：定义爬虫的通用登录接口和请求接口，以及cookies的更新存储
+  - tool：工具库
+    - chain_handler.go：////////////未知
+    - check_param.go：检查各种参数，包括请求参数，数据库信息等
+    - parser.go：//////////////////未知
+    - vpn.go：检查是否需要校园网/////////////没用
+  - web：网络层
+    - controller：控制器
+      - card_controller.go：校园卡控制器
+    - router：路由
+      - router.go：路由
+- test：代码测试
+- application.yaml：配置信息
+- main.go：启动程序
