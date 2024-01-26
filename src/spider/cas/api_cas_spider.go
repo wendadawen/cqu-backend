@@ -24,7 +24,6 @@ type authentication struct {
 	IdNo    string
 	pwd     string
 	client  *resty.Client
-	cookies *cookiejar.Jar
 	isLogin bool
 
 	token         string
@@ -46,6 +45,5 @@ func NewAuth(stuId string, pwd string) Auth {
 		casId:   stuId,
 		pwd:     pwd,
 		isLogin: false,
-		cookies: cookieJar,
 	}
 }

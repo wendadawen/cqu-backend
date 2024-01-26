@@ -2,16 +2,16 @@ package cas
 
 import (
 	"cqu-backend/src/object"
+	"cqu-backend/src/tool"
 	"github.com/go-resty/resty/v2"
 	"log"
+	"net"
 	"net/http"
-	"net/url"
-	"strings"
 )
 
 func (this *authentication) GetCookie(rawURL string, name string) *http.Cookie {
-	parse, _ := url.Parse(rawURL)
-	cookies := this.cookies.Cookies(parse)
+	//parse, _ := url.Parse(rawURL)
+	cookies := this.client.Cookies
 	for _, cookie := range cookies {
 		if cookie.Name == name {
 			return cookie
@@ -28,60 +28,87 @@ func (this *authentication) GetClient() *resty.Client {
 func (this *authentication) SetHost(host string) {
 	this.client.SetHostURL(host)
 }
-
 func (this *authentication) Login() error {
 	if this.isLogin == true {
 		return nil
 	}
-	res, _ := this.Do(http.MethodGet, validCodeUrl+this.casId, nil) // 验证码
-	if strings.Contains(res, "true") {
-		log.Printf("[authentication Login Do1 Error] %+v\n", object.CasValidcode)
-		return object.CasValidcode
-	}
 	res, err := this.Do(http.MethodGet, loginUrl, nil) // 请求表单数据
 	if err != nil {
-		log.Printf("[authentication Login Do2 Error] %+v\n", err)
+		log.Printf("[CasSpider Login Error] %+v\n", err)
 		return err
 	}
 	payload, err := ParseAndBuildLoginPayload(res, this.casId, this.pwd)
 	if err != nil {
-		log.Printf("[authentication Login ParseAndBuildLoginPayload Error] %+v\n", err)
+		log.Printf("[CasSpider Login Error] %+v\n", err)
 		return err
 	}
 	res, err = this.Do(http.MethodPost, loginUrl, payload) // 登录
 	if err != nil {
-		log.Printf("[authentication Login Do3 Error] %+v\n", err)
+		log.Printf("[CasSpider Login Error] %+v\n", err)
 		return err
 	}
 	err = checkLoginResult(res, loginResponseMap)
-	/*	if xerrors.Is(err, object.CasContiuneError) {
-		execution := tool.FindFirstSubMatch(executionRegExp, res)
-		res, err = this.Do(http.MethodPost, loginUrl, map[string]string{
-			"execution": execution,
-			"_eventId":  "continue",
-		})
-	}*/
 	if err != nil {
-		log.Printf("[authentication Login checkLoginResult Error] %+v\n", err)
+		log.Printf("[CasSpider Login Error] %+v\n", err)
 		return err
 	}
 	this.isLogin = true
 	return nil
 }
+func (this *authentication) Do(method string, urlPath string, payload map[string]string) (string, error) {
 
-// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ 统一认证登录返回信息处理 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-var loginResponseMap = map[string]error{
-	"当前登录": nil,
-	"您提供的用户名或者密码有误":    object.CasAccountError,
-	"当前存在其他用户使用同一帐号登录": object.CasContiuneError,
-}
+	if this.client.HostURL == "https://my.cqu.edu.cn" && tool.ShouldProxy(tool.MY) { // 根据 yaml 配置代理
+		this.client.SetProxy(tool.ProxyUrl)
+	}
 
-func checkLoginResult(res string, stringToError map[string]error) error {
-	for key, err := range stringToError {
-		if strings.Contains(res, key) {
-			return err
+	if urlPath == "/login" && method == http.MethodPost {
+		this.client.GetClient().CheckRedirect = NoCheckRedirect
+	} else {
+		this.client.GetClient().CheckRedirect = this.DoCheckRedirect
+	}
+
+	r := this.client.
+		SetRetryCount(2).
+		AddRetryCondition(func(r *resty.Response, err error) bool { return r.IsError() || err != nil }).
+		R()
+
+	if len(this.token) != 0 {
+		r.SetHeader("Authorization", "Bearer "+this.token)
+	}
+
+	jsonArray, ok := payload["jsonArray"]
+	if ok {
+		r = r.SetHeaders(map[string]string{
+			"Content-Type":     "application/json",
+			"User-Agent":       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
+			"X-Requested-With": "XMLHttpRequest",
+		}).
+			SetBody([]byte(jsonArray))
+	} else {
+		r = r.SetHeaders(map[string]string{
+			"Content-Type":     "application/x-www-form-urlencoded",
+			"User-Agent":       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.54",
+			"X-Requested-With": "XMLHttpRequest",
+		}).
+			SetFormData(payload)
+	}
+
+	res, err := r.Execute(method, urlPath)
+
+	if err != nil {
+		if err, ok := err.(net.Error); ok && err.Timeout() {
+			return "", object.HttpTimeout
+		} else {
+			return "", object.CasWebError
 		}
 	}
-	//log.Printf("[Cas Login] Unkown Login result \n%s", res)
-	return object.UnknownError
+
+	if urlPath == "/login" && method == http.MethodPost {
+		if _, ok = res.Header()["Location"]; !ok {
+			return "", object.CasAccountError
+		}
+		return "登录成功", nil
+	}
+
+	return res.String(), nil
 }

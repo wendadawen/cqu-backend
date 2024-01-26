@@ -3,94 +3,31 @@ package card
 import (
 	"cqu-backend/src/bo"
 	"cqu-backend/src/object"
-	"cqu-backend/src/spider"
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
-const (
-	cardUrl          = "http://card.cqu.edu.cn"
-	cardLoginUrl     = "/Login/LoginBySnoQuery"
-	cardValidCodeUrl = "/Login/GetValidateCode"
-	cardRsaUrl       = "/Common/GetRsaKey"
-	cardNcLoginUrl   = "/Login/NcLogin"
-	cardBalanceUrl   = "/User/GetCardInfoByAccountNoParm"
-	cardNcBalanceUrl = "/NcAccType/GetCurrentAccountList"
-	cardElectricUrl  = "/Tsm/TsmCommon"
-	cardDetailUrl    = "/Report/GetMyBill"
-	cardNcDetailUrl  = "/NcReport/GetPersonTrjn"
-
-	feeReferUrl      = "http://card.cqu.edu.cn:8080/blade-auth/token/thirdToToken/fwdt?referer=app&ticket=%s&from=ehall&cometype="
-	feeEleUrl        = "http://card.cqu.edu.cn:8080/charge/feeitem/getThirdData"
-	ValidCodeMaxTime = 4
-	cardLoginSucceed = `"IsSucceed":true`
-	cardLoginFailed  = "用户名或密码错误"
-	newFeeItemId     = "182"
-	oldFeeItemId     = "181"
-)
-
-// Card 一卡通接口
-type Card interface {
-	Balance() (*bo.BalanceData, error)
-	Record() (bo.ConsumptionRecord, error)
-}
-
-// CardAccount 一卡通账户，包括账号密码和房间号
-type CardAccount struct {
-	spider.SpiderAccount        // 学生账号
-	Room                 string // 学生房间号
-}
-
-// cardImplement 一卡通信息的查询接口，是选择通过统一认证查询还是一卡通查询
-type cardImplement interface {
-	spider.WithLogin
-	spider.WithClientDo
-}
-
-// cardTemplate Card和cardImplement接口的实现类
-type cardTemplate struct {
-	cardImplement cardImplement // 继承一个实现了Login和Do接口的结构体, 如CasCard实现了统一认证登录的Login和Do
-	client        *resty.Client
-	cardAccount   CardAccount // 一卡通账号
-
-	acnt string
-}
-
-// 传入一个实现了Login和Do接口的结构体，如CasCard实现了统一认证登录的Login和Do
-func newCardTemplate(cardImplement cardImplement) *cardTemplate {
-	return &cardTemplate{cardImplement: cardImplement}
-}
-
-// ====================实现cardImplement接口=====================
-func (this *cardTemplate) Login() error {
-	return this.cardImplement.Login()
-}
-func (this *cardTemplate) Do(method string, urlPath string, payload map[string]string) (string, error) {
-	return this.cardImplement.Do(method, urlPath, payload)
-}
-
-// ====================实现Card接口==============================
 func (this *cardTemplate) Balance() (*bo.BalanceData, error) {
 	err := this.Login()
 	if err != nil {
-		log.Printf("[SpiderCard Balance Login Error] %+v\n", err)
+		log.Printf("[CardSpider Balance Error] %+v\n", err)
 		return nil, err
 	}
 	res, err := this.Do(http.MethodPost, cardUrl+cardNcBalanceUrl, map[string]string{"json": "true"})
 	if err != nil || !strings.Contains(res, `"respInfo\":\"处理成功`) {
-		log.Printf("[SpiderCard Balance Do Error] %+v\n", err)
+		log.Printf("[CardSpider Balance Error] %+v\n", err)
 		return nil, object.CardBalanceError
 	}
 	res = strings.ReplaceAll(res, `\`, "")
 	res = res[1 : len(res)-1]
 	objs := gjson.Get(res, "objs").Array()
 	if len(objs) == 0 {
-		log.Printf("[SpiderCard Balance Get Error] %+v\n", object.CardBalanceError)
+		log.Printf("[CardSpider Balance Error] %+v\n", object.CardBalanceError)
 		return nil, object.CardBalanceError
 	}
 	balance := objs[0].Get("acctAmt").Int()
@@ -101,6 +38,44 @@ func (this *cardTemplate) Balance() (*bo.BalanceData, error) {
 	}, nil
 }
 func (this *cardTemplate) Record() (bo.ConsumptionRecord, error) {
-
+	err := this.Login()
+	if err != nil {
+		log.Printf("[CardSpider Record Error] %+v\n", err)
+		return nil, err
+	}
+	now := time.Now()
+	start := now.AddDate(0, -3, 0)
+	sdate := start.Format("2006-01-02")
+	edate := now.Format("2006-01-02")
+	res, err := this.Do(http.MethodPost, cardUrl+cardNcDetailUrl, map[string]string{
+		"sdate": sdate,
+		"edate": edate,
+		//"account":  this.acnt, // 统一认证不需要这个参数，一卡通登录需要
+		"trancode": "01,02,03,13,14,15,17,18,21,23,25,39,40,41,42,43,44,45,49,A0,A1,A4,5A,5B",
+		"page":     "1",
+		"rows":     "1000",
+	})
+	if err != nil {
+		log.Printf("[CardSpider Record Error] %+v\n", err)
+		return nil, err
+	}
+	record := ParseRecord(res)
+	return record, nil
+}
+func (this *cardTemplate) RoomElectricCharge() (*bo.ElectricCharge, error) {
+	err := this.Login()
+	if err != nil {
+		log.Printf("[CardSpider RoomElectricCharge Error] %+v\n", err)
+		return nil, err
+	}
+	//room := this.account.Room
+	//var campus campusFee  // TODO 到这里
+	//if strings.Contains(room, "S") { // 需要在调用前进行大写转换，以及合法性判定
+	//	campus = oldCampusFee
+	//} else if strings.Contains(room, "XHC") { // A区新华村学生宿舍
+	//	campus = oldCampusFee
+	//} else {
+	//	campus = newCampusFee
+	//}
 	return nil, nil
 }

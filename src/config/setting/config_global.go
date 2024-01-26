@@ -16,8 +16,9 @@ var (
 
 func init() {
 	conf = viper.New()
-	conf.AddConfigPath("./")
-	conf.SetConfigName("../../application")
+	conf.AddConfigPath("C:/Users/23202/Desktop/WeCqu/cqu-backend/")
+	//conf.AddConfigPath("./")
+	conf.SetConfigName("application") // 正式
 	err := conf.ReadInConfig()
 	if err != nil {
 		log.Fatalf("[Read Config] %+v\n", err.Error())
