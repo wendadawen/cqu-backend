@@ -36,7 +36,9 @@ type cardImplement interface {
 type cardTemplate struct {
 	cardImplement cardImplement // 继承一个实现了Login和Do接口的结构体, 如CasCard实现了统一认证登录的Login和Do
 	account       CardAccount
-	acnt          string
+
+	acnt       string // 统一认证不需要，一卡通登录应该需要
+	hallticket string // 用来获取电费的参数
 }
 
 // 传入一个实现了Login和Do接口的结构体，如CasCard实现了统一认证登录的Login和Do

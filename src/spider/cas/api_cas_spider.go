@@ -14,7 +14,7 @@ type Auth interface {
 	spider.WithClientDo
 	spider.WithLogin
 	SetHost(host string)
-	GetCookie(rawRUL string, name string) *http.Cookie
+	GetCookie(rawURL, name string) *http.Cookie
 	GetJsSsoTicketId() string
 	GetClient() *resty.Client
 }

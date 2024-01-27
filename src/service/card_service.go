@@ -54,7 +54,7 @@ func (this *CardService) ElectricByCas(StuId string, CasPwd string, Room string)
 		return nil, err
 	}
 	fee, err := Card.RoomElectricCharge()
-	if err == nil {
+	if err != nil {
 		log.Printf("[CardService ElectricByCas Error] Account=%s\n", StuId)
 		return nil, err
 	}

@@ -1,12 +1,14 @@
 package card
 
 import (
+	"cqu-backend/src/object"
 	"cqu-backend/src/spider/cas"
 	"log"
 	"net/http"
 )
 
 type CasCard struct {
+	*cardTemplate
 	auth    cas.Auth
 	isLogin bool
 }
@@ -20,6 +22,7 @@ func NewCardByCas(cardAccount CardAccount) (Card, error) {
 	}
 	cardTemplate := newCardTemplate(casCard)
 	cardTemplate.account = cardAccount
+	casCard.cardTemplate = cardTemplate
 	return cardTemplate, nil
 }
 
@@ -46,6 +49,18 @@ func (this *CasCard) Login() error {
 		"continueurl": "http://card.cqu.edu.cn/cassyno/index",
 		"ssoticketid": jsssoticketid,
 	})
+	if err != nil {
+		log.Printf("[CasCard Login Error] %+v\n", err)
+		return err
+	}
+	// hallticket:用来获取电费的参数
+	cookie := this.auth.GetCookie("http://card.cqu.edu.cn", "hallticket")
+	if cookie == nil {
+		log.Printf("[CasCard Login Error] %+v\n", object.CardCookieError)
+		return object.CardCookieError
+	}
+	this.hallticket = cookie.Value
+	this.isLogin = true
 	return nil
 }
 

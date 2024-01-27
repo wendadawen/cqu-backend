@@ -7,11 +7,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 )
 
-func (this *authentication) GetCookie(rawURL string, name string) *http.Cookie {
-	//parse, _ := url.Parse(rawURL)
-	cookies := this.client.Cookies
+func (this *authentication) GetCookie(rawURL, name string) *http.Cookie {
+	parse, _ := url.Parse(rawURL)
+	cookies := this.client.GetClient().Jar.Cookies(parse)
 	for _, cookie := range cookies {
 		if cookie.Name == name {
 			return cookie

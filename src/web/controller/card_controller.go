@@ -77,7 +77,7 @@ func (this *CardController) PostFee() object.Result {
 		return object.CheckException(err)
 	}
 	if student.Unsettle != "card" {
-		res, err := this.CardService.ElectricByCas(student.StuId, student.CasPwd)
+		res, err := this.CardService.ElectricByCas(student.StuId, student.CasPwd, student.Room)
 		if err == nil {
 			return object.DataResult(res)
 		}

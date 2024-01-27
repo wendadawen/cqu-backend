@@ -62,20 +62,27 @@ func (this *cardTemplate) Record() (bo.ConsumptionRecord, error) {
 	record := ParseRecord(res)
 	return record, nil
 }
+
+// 这个网站： http://card.cqu.edu.cn/Phone/Index
 func (this *cardTemplate) RoomElectricCharge() (*bo.ElectricCharge, error) {
 	err := this.Login()
 	if err != nil {
 		log.Printf("[CardSpider RoomElectricCharge Error] %+v\n", err)
 		return nil, err
 	}
-	//room := this.account.Room
-	//var campus campusFee  // TODO 到这里
-	//if strings.Contains(room, "S") { // 需要在调用前进行大写转换，以及合法性判定
-	//	campus = oldCampusFee
-	//} else if strings.Contains(room, "XHC") { // A区新华村学生宿舍
-	//	campus = oldCampusFee
-	//} else {
-	//	campus = newCampusFee
-	//}
-	return nil, nil
+	room := this.account.Room
+	var campus campusFee
+	if strings.Contains(room, "S") { // 需要在调用前进行大写转换，以及合法性判定
+		campus = oldCampusFee
+	} else if strings.Contains(room, "XHC") { // A区新华村学生宿舍
+		campus = oldCampusFee
+	} else {
+		campus = newCampusFee
+	}
+	charge, err := this.eleChargeAt(campus)
+	if err != nil {
+		log.Printf("[CardSpider RoomElectricCharge Error] %+v\n", err)
+		return nil, err
+	}
+	return charge, nil
 }
