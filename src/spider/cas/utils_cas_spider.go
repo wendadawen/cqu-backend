@@ -3,14 +3,12 @@ package cas
 import (
 	"bytes"
 	"cqu-backend/src/object"
-	"cqu-backend/src/tool"
 	"crypto/des"
 	"crypto/tls"
 	"encoding/base64"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-resty/resty/v2"
 	"github.com/tidwall/gjson"
-	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -26,33 +24,18 @@ func NoCheckRedirect(req *http.Request, via []*http.Request) error {
 	return http.ErrUseLastResponse
 }
 
-func (this *authentication) DoCheckRedirect(req *http.Request, via []*http.Request) error {
-	if strings.Contains(req.URL.String(), "/enroll/token-index?code=") {
-		code := ""
-		compile := regexp.MustCompile("=(.*?)&state")
-		submatch := compile.FindStringSubmatch(req.URL.RawQuery)
-		if len(submatch) > 0 {
-			code = submatch[1]
-		}
-		_clinet := resty.New()
-		if this.client.HostURL == "https://my.cqu.edu.cn" && tool.ShouldProxy(tool.MY) { // 根据 yaml 配置代理
-			_clinet.SetProxy(tool.ProxyUrl)
-			//log.Printf("my.cqu use prooxy, proxy adress: %s", tool.ProxyUrl)
-			_clinet.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-		}
-		tokenReq := _clinet.R()
-		tokenReq.SetHeader("Cookie", via[0].Header.Get("Cookie"))
-		tokenReq.SetHeader("accessToken", "[object Object]")
-		tokenReq.SetHeader("Authorization", "Basic ZW5yb2xsLXByb2Q6YXBwLWEtMTIzNA==")
-		tokenReq.SetHeader("Content-Type", "application/x-www-form-urlencoded")
-		res, err := tokenReq.SetFormData(map[string]string{
-			"client_id":     "enroll-prod",
+func (this *auth) DoCheckRedirect(req *http.Request, via []*http.Request) error {
+
+	if strings.Contains(req.URL.String(), "token-index?code=") && len(this.token) == 0 {
+		code := req.URL.Query().Get("code")
+		req := this.client.R()
+		res, err := req.SetFormData(map[string]string{
+			"client_id":     "personal-prod",
 			"client_secret": "app-a-1234",
 			"code":          code,
-			"redirect_uri":  "https://my.cqu.edu.cn/enroll/token-index",
-			"grant_type":    "authorization_code"}).Execute(http.MethodPost, this.client.HostURL+"/authserver/oauth/token")
+			"redirect_uri":  "https://my.cqu.edu.cn/workspace/token-index",
+			"grant_type":    "authorization_code"}).Post(this.client.HostURL + "/authserver/oauth/token")
 		if err != nil {
-			log.Printf("[Cas] %+v", err)
 			return err
 		}
 		if strings.Contains(res.String(), "access_token") { // 成功
@@ -60,39 +43,7 @@ func (this *authentication) DoCheckRedirect(req *http.Request, via []*http.Reque
 		}
 	}
 
-	if strings.Contains(req.URL.String(), "/sam/token-index?code=") {
-		code := ""
-		compile := regexp.MustCompile("=(.*?)&state")
-		submatch := compile.FindStringSubmatch(req.URL.RawQuery)
-		if len(submatch) > 0 {
-			code = submatch[1]
-		}
-		_clinet := resty.New()
-		if this.client.HostURL == "https://my.cqu.edu.cn" && tool.ShouldProxy(tool.MY) { // 根据 yaml 配置代理
-			_clinet.SetProxy(tool.ProxyUrl)
-			//log.Printf("my.cqu use prooxy, proxy adress: %s", tool.ProxyUrl)
-			_clinet.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-		}
-		tokenReq := _clinet.R()
-		tokenReq.SetHeader("Cookie", via[0].Header.Get("Cookie"))
-		tokenReq.SetHeader("Authorization", "Basic c2FtLXByZDphcHAtYS0xMjM0")
-		tokenReq.SetHeader("Content-Type", "application/x-www-form-urlencoded")
-		res, err := tokenReq.SetFormData(map[string]string{
-			"client_id":     "sam-prd",
-			"client_secret": "app-a-1234",
-			"code":          code,
-			"redirect_uri":  "https://my.cqu.edu.cn/sam/token-index",
-			"grant_type":    "authorization_code"}).Execute(http.MethodPost, this.client.HostURL+"/authserver/oauth/token")
-		if err != nil {
-			log.Printf("[Cas] %+v", err)
-			return err
-		}
-		if strings.Contains(res.String(), "access_token") { // 成功
-			this.token = gjson.Get(res.String(), "access_token").Str
-		}
-	}
-
-	if strings.Contains(req.URL.Path, "jsessionid=") && req.URL.Host == "card.cqu.edu.cn:7280" {
+	if strings.Contains(req.URL.Path, "jsessionid=") && req.URL.Host == "card.cqu.edu.cn:7280" && len(this.jSssoticketid) == 0 {
 		Cookie := via[0].Header.Get("Cookie") // cardAuth2card
 		client := resty.New()
 		client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})

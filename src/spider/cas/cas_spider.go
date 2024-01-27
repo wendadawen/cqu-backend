@@ -10,7 +10,7 @@ import (
 	"net/url"
 )
 
-func (this *authentication) GetCookie(rawURL, name string) *http.Cookie {
+func (this *auth) GetCookie(rawURL, name string) *http.Cookie {
 	parse, _ := url.Parse(rawURL)
 	cookies := this.client.GetClient().Jar.Cookies(parse)
 	for _, cookie := range cookies {
@@ -20,16 +20,19 @@ func (this *authentication) GetCookie(rawURL, name string) *http.Cookie {
 	}
 	return nil
 }
-func (this *authentication) GetJsSsoTicketId() string {
+func (this *auth) GetJsSsoTicketId() string {
 	return this.jSssoticketid
 }
-func (this *authentication) GetClient() *resty.Client {
+func (this *auth) GetToken() string {
+	return this.token
+}
+func (this *auth) GetClient() *resty.Client {
 	return this.client
 }
-func (this *authentication) SetHost(host string) {
+func (this *auth) SetHost(host string) {
 	this.client.SetHostURL(host)
 }
-func (this *authentication) Login() error {
+func (this *auth) Login() error {
 	if this.isLogin == true {
 		return nil
 	}
@@ -56,7 +59,7 @@ func (this *authentication) Login() error {
 	this.isLogin = true
 	return nil
 }
-func (this *authentication) Do(method string, urlPath string, payload map[string]string) (string, error) {
+func (this *auth) Do(method string, urlPath string, payload map[string]string) (string, error) {
 
 	if this.client.HostURL == "https://my.cqu.edu.cn" && tool.ShouldProxy(tool.MY) { // 根据 yaml 配置代理
 		this.client.SetProxy(tool.ProxyUrl)

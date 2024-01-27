@@ -1,8 +1,6 @@
 package spider
 
-import (
-	"net/http"
-)
+import "cqu-backend/src/bo"
 
 const (
 	SpiderUserAgent  = "Mozilla/5.0 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html）"
@@ -22,15 +20,7 @@ type SpiderAccount struct {
 	Password string
 }
 
-type CookiesMap = map[string]*http.Cookie
-
-func UpdateCookies(cookies CookiesMap, c []*http.Cookie) {
-	if cookies == nil || c == nil {
-		return
-	}
-	if len(c) > 0 {
-		for _, cookie := range c {
-			cookies[cookie.Name] = cookie
-		}
-	}
+// 本科生和研究生都需要的功能
+type StudentUnionImplement interface {
+	ExamSchedule() (*bo.ExamScheduleBo, error)
 }

@@ -11,23 +11,23 @@ import (
 )
 
 type Auth interface {
-	spider.WithClientDo
+	spider.WithClientDo // 统一认证的Do函数可能给以下方面调用：card除了电费不用，my
 	spider.WithLogin
 	SetHost(host string)
 	GetCookie(rawURL, name string) *http.Cookie
 	GetJsSsoTicketId() string
+	GetToken() string
 	GetClient() *resty.Client
 }
 
-type authentication struct {
+type auth struct {
 	casId   string
-	IdNo    string
 	pwd     string
 	client  *resty.Client
 	isLogin bool
 
-	token         string
-	jSssoticketid string
+	token         string // my系统用
+	jSssoticketid string // cara系统用
 }
 
 func NewAuth(stuId string, pwd string) Auth {
@@ -40,7 +40,7 @@ func NewAuth(stuId string, pwd string) Auth {
 	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 	cookieJar, _ := cookiejar.New(nil)
 	client.SetCookieJar(cookieJar)
-	return &authentication{
+	return &auth{
 		client:  client,
 		casId:   stuId,
 		pwd:     pwd,
