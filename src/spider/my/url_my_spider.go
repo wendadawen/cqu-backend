@@ -7,4 +7,5 @@ const (
 	myAuthserverCas       = "/authserver/authentication/cas"
 	myRank                = "/api/sam/score/student/studentGpaRanking"
 	myScore               = "/api/sam/score/student/score"
+	myClass               = "/api/timetable/class/stu-course?" // https://my.cqu.edu.cn/workspace/course这个网页的课表
 )

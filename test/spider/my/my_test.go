@@ -64,3 +64,17 @@ func TestCurrentScore(t *testing.T) {
 		println(tool.ToString(*CurrentScore))
 	}
 }
+
+func TestClassSchedule(t *testing.T) {
+	account := spider.SpiderAccount{
+		Account:  test.StudId1,
+		Password: test.CasPwd1,
+	}
+	My, _ := my.NewMyByCas(account)
+	ClassSchedule, err := My.ClassSchedule()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+	} else {
+		println(tool.ToString(*ClassSchedule))
+	}
+}

@@ -18,7 +18,7 @@ func (this *myTemplate) ExamSchedule() (*bo.ExamScheduleBo, error) {
 		log.Printf("[MySpider ExamSchedule Error] %+v\n", err)
 		return nil, err
 	}
-	exams := exactExams(res)
+	exams := extractExam(res)
 	return exams, nil
 }
 
@@ -33,7 +33,7 @@ func (this *myTemplate) Rank() (*model.Rank, error) {
 		log.Printf("[MySpider Rank Error] %+v\n", err)
 		return nil, err
 	}
-	return exactRank(res), nil
+	return extractRank(res), nil
 }
 
 func (this *myTemplate) AllScore() (*bo.MyScoreResultBo, error) {
@@ -47,7 +47,7 @@ func (this *myTemplate) AllScore() (*bo.MyScoreResultBo, error) {
 		log.Printf("[MySpider AllScore Error] %+v\n", err)
 		return nil, err
 	}
-	return exactAllScore(res), nil
+	return extractAllScore(res), nil
 }
 
 func (this *myTemplate) CurrentScore() (*bo.MyScoreListBo, error) {
@@ -61,5 +61,19 @@ func (this *myTemplate) CurrentScore() (*bo.MyScoreListBo, error) {
 		log.Printf("[MySpider CurrentScore Error] %+v\n", err)
 		return nil, err
 	}
-	return exactCurrentScore(res), nil
+	return extractCurrentScore(res), nil
+}
+
+func (this *myTemplate) ClassSchedule() (*bo.ClassScheduleBo, error) {
+	err := this.Login()
+	if err != nil {
+		log.Printf("[MySpider ClassSchedule Error] %+v\n", err)
+		return nil, err
+	}
+	res, err := this.Do(http.MethodPost, myClass, nil)
+	if err != nil {
+		log.Printf("[MySpider ClassSchedule Error] %+v\n", err)
+		return nil, err
+	}
+	return extractClassSchedule(res), nil
 }
