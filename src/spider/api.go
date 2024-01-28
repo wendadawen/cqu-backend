@@ -1,6 +1,9 @@
 package spider
 
-import "cqu-backend/src/bo"
+import (
+	"cqu-backend/src/bo"
+	"cqu-backend/src/dao/model"
+)
 
 const (
 	SpiderUserAgent  = "Mozilla/5.0 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html）"
@@ -22,5 +25,6 @@ type SpiderAccount struct {
 
 // 本科生和研究生都需要的功能
 type StudentUnionImplement interface {
-	ExamSchedule() (*bo.ExamScheduleBo, error)
+	ExamSchedule() (*bo.ExamScheduleBo, error) // 考表
+	Rank() (*model.Rank, error)                // 绩点排名
 }
