@@ -4,6 +4,7 @@ import (
 	"cqu-backend/src/spider"
 	"cqu-backend/src/spider/cas"
 	"log"
+	"net/http"
 )
 
 type CasMis struct {
@@ -33,7 +34,12 @@ func (this *CasMis) Login() error {
 		log.Printf("[CasMis Login Error] %+v\n", err)
 		return err
 	}
-	// TODO
+	_, err = this.Do(http.MethodGet, misLogin, nil)
+	this.auth.SetHost(misHost)
+	if err != nil {
+		log.Printf("[CasMis Login Error] %+v\n", err)
+		return err
+	}
 	this.isLogin = true
 	return nil
 }

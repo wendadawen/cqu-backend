@@ -1,6 +1,8 @@
 package mis
 
-import "cqu-backend/src/spider"
+import (
+	"cqu-backend/src/spider"
+)
 
 type Mis interface {
 	spider.StudentUnionImplement
