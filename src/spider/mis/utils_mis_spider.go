@@ -3,6 +3,8 @@ package mis
 import (
 	"bytes"
 	"cqu-backend/src/bo"
+	"cqu-backend/src/config"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cast"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -170,4 +172,93 @@ func UnicodeIndex(str, substr string) int {
 		result = len(rs)
 	}
 	return result
+}
+
+var toNum = map[rune]string{'0': "零", '1': "一", '2': "二", '3': "三", '4': "四", '5': "五", '6': "六", '7': "七", '8': "八", '9': "九"}
+
+func extractAllScore(res string) *bo.MyScoreResultBo {
+	res = tran2Utf8(res)
+	scores := map[string]bo.MyScoreList{} //一个学期的放在一起
+	total := bo.MyScoreList{}             //用于计算全部绩点
+	totalScore := []bo.MyScoreListBo{}    //用于存放每个学期的成绩和绩点
+	var session string
+	totalCredits := map[string]float64{}
+	document, _ := goquery.NewDocumentFromReader(strings.NewReader(res))
+	document.Find("table#score_sheet tr").Next().Next().Each(func(i int, tr *goquery.Selection) {
+		item := tr.Find("td").Map(func(idx int, td *goquery.Selection) string {
+			return strings.TrimSpace(td.Text())
+		})
+		//len(item)==2时，item[2]为综合加权平均成绩，后续可以加上，但需要和本科生成绩统一格式
+		if len(item) == 5 {
+			s := bo.MyScoreBo{
+				StudyNature:        item[0],
+				Course:             item[1],
+				Credits:            item[3], //未知学年的学分为-
+				EffectiveScoreShow: item[4],
+				EffectiveScore:     item[4], //都返回
+			}
+			if v, ok := totalCredits[item[2]]; ok {
+				totalCredits[item[2]] = v + cast.ToFloat64(s.Credits)
+			} else {
+				totalCredits[item[2]] = cast.ToFloat64(s.Credits)
+			}
+			if cast.ToFloat64(s.Credits) != 0 {
+				total = append(total, s) //用于计算总绩点,其中学分项不能缺失
+			}
+			if list, ok := scores[item[2]]; ok { //每个学期的放一个集合
+				scores[item[2]] = append(list, s)
+			} else {
+				scores[item[2]] = bo.MyScoreList{s}
+			}
+		}
+	})
+
+	for k, _ := range scores {
+		r := []rune(k)
+		if len(r) != 3 {
+			session = "未知学年"
+		} else {
+			session = fmt.Sprintf("第%s学年%c", toNum[r[0]], r[2])
+		}
+		totalScore = append(totalScore, bo.MyScoreListBo{
+			Session:      session,
+			TotalCredits: strconv.FormatFloat(totalCredits[k], 'f', 1, 64),
+			GpaFour:      cast.ToString(scores[k].Gpa(bo.FourGpa)),
+			GpaFive:      cast.ToString(scores[k].Gpa(bo.FiveGpa)),
+			Scores:       scores[k],
+		})
+	}
+	return &bo.MyScoreResultBo{
+		TotalScore:   totalScore,
+		TotalGpaFour: cast.ToString(total.Gpa(bo.FourGpa)),
+		TotalGpaFive: cast.ToString(total.Gpa(bo.FiveGpa)),
+	}
+}
+
+func extractCurrentScore(res string) *bo.MyScoreListBo {
+	res = tran2Utf8(res)
+	var session = config.CquConfig.TermCurrentMis
+	var scores bo.MyScoreList
+	document, _ := goquery.NewDocumentFromReader(strings.NewReader(res))
+	document.Find("table#score_sheet tr").Next().Next().Each(func(i int, tr *goquery.Selection) {
+		item := tr.Find("td").Map(func(idx int, td *goquery.Selection) string {
+			return strings.TrimSpace(td.Text())
+		})
+		if len(item) == 5 && item[2] == session { //过滤最近学期出的成绩
+			s := bo.MyScoreBo{
+				StudyNature:    item[0],
+				Course:         item[1],
+				Credits:        item[3], //未知学年的学分为-
+				EffectiveScore: item[4], //都返回
+			}
+			scores = append(scores, s)
+		}
+	})
+	r := []rune(session)
+	return &bo.MyScoreListBo{
+		Session: fmt.Sprintf("第%s学年%c", toNum[r[0]], r[2]),
+		Scores:  scores,
+		GpaFour: cast.ToString(scores.Gpa(bo.FourGpa)),
+		GpaFive: cast.ToString(scores.Gpa(bo.FiveGpa)),
+	}
 }

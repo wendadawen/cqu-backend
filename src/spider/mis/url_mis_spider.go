@@ -6,4 +6,5 @@ const (
 	misClass = "/mis/curricula/show_stu.jsp?stuSerial="
 	misExam  = "/mis/student/eaclass/view_exam.jsp"
 	misInfo  = "/mis/student/xueji/query/addbasic.jsp"
+	misScore = "/mis/student/print_result/stu_score_print.jsp"
 )

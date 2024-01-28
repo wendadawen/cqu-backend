@@ -43,13 +43,31 @@ func (this *misTemplate) Rank() (*model.Rank, error) {
 }
 
 func (this *misTemplate) AllScore() (*bo.MyScoreResultBo, error) {
-
-	return nil, nil
+	err := this.Login()
+	if err != nil {
+		log.Printf("[MisSpider AllScore Error] %+v\n", err)
+		return nil, err
+	}
+	res, err := this.Do(http.MethodGet, misScore, nil)
+	if err != nil {
+		log.Printf("[MisSpider AllScore Error] %+v\n", err)
+		return nil, err
+	}
+	return extractAllScore(res), nil
 }
 
 func (this *misTemplate) CurrentScore() (*bo.MyScoreListBo, error) {
-
-	return nil, nil
+	err := this.Login()
+	if err != nil {
+		log.Printf("[MisSpider CurrentScore Error] %+v\n", err)
+		return nil, err
+	}
+	res, err := this.Do(http.MethodGet, misScore, nil)
+	if err != nil {
+		log.Printf("[MisSpider CurrentScore Error] %+v\n", err)
+		return nil, err
+	}
+	return extractCurrentScore(res), nil
 }
 
 func (this *misTemplate) StudentInfo() (*bo.StudentInfoBo, error) {
