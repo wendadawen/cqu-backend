@@ -223,3 +223,27 @@ func parseWeek(weekStr string) (week []int) {
 	}
 	return
 }
+
+func extractStudentInfo(json string) *bo.StudentInfoBo {
+	data := gjson.Get(json, "data")
+	return &bo.StudentInfoBo{
+		Type:                 bo.UndergraduateStudent,
+		Grade:                data.Get("grade").String(),
+		IdNumber:             data.Get("idNumber").String(),
+		PoliticalStatus:      data.Get("politicalStatus").String(),
+		Nationality:          data.Get("nationality").String(),
+		Phone:                data.Get("phone").String(),
+		Email:                data.Get("email").String(),
+		AuthId:               data.Get("authId").String(),
+		Birthday:             data.Get("birthday").String(),
+		HomeAddress:          data.Get("homeAddress").String(),
+		Gpa:                  data.Get("gpa").String(),
+		MajorRanking:         data.Get("majorRanking").String(),
+		Duration:             data.Get("duration").String(),
+		ObtainSchoolRollTime: data.Get("obtainSchoolRollTime").String(),
+		EnrollmentTime:       data.Get("enrollmentTime").String(),
+		DepartureTime:        data.Get("departureTime").String(),
+		StuSourceRegion:      data.Get("stuSourceRegion").String(),
+		StuSourceUnit:        data.Get("stuSourceUnit").String(),
+	}
+}

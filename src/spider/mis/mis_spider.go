@@ -23,3 +23,7 @@ func (this *misTemplate) CurrentScore() (*bo.MyScoreListBo, error) {
 
 	return nil, nil
 }
+
+func (this *misTemplate) StudentInfo() (*bo.StudentInfoBo, error) {
+	return nil, nil
+}

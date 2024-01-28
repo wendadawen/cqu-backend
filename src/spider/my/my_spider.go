@@ -77,3 +77,17 @@ func (this *myTemplate) ClassSchedule() (*bo.ClassScheduleBo, error) {
 	}
 	return extractClassSchedule(res), nil
 }
+
+func (this *myTemplate) StudentInfo() (*bo.StudentInfoBo, error) {
+	err := this.Login()
+	if err != nil {
+		log.Printf("[MySpider StudentInfo Error] %+v\n", err)
+		return nil, err
+	}
+	res, err := this.Do(http.MethodGet, myInfo, nil)
+	if err != nil {
+		log.Printf("[MySpider StudentInfo Error] %+v\n", err)
+		return nil, err
+	}
+	return extractStudentInfo(res), nil
+}

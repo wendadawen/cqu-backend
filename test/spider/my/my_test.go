@@ -78,3 +78,17 @@ func TestClassSchedule(t *testing.T) {
 		println(tool.ToString(*ClassSchedule))
 	}
 }
+
+func TestStudentInfo(t *testing.T) {
+	account := spider.SpiderAccount{
+		Account:  test.StudId1,
+		Password: test.CasPwd1,
+	}
+	My, _ := my.NewMyByCas(account)
+	StudentInfo, err := My.StudentInfo()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+	} else {
+		println(tool.ToString(*StudentInfo))
+	}
+}

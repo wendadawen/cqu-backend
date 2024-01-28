@@ -30,4 +30,5 @@ type StudentUnionImplement interface {
 	AllScore() (*bo.MyScoreResultBo, error)      // 全部成绩
 	CurrentScore() (*bo.MyScoreListBo, error)    // 最近学期成绩
 	ClassSchedule() (*bo.ClassScheduleBo, error) // 课表
+	StudentInfo() (*bo.StudentInfoBo, error)     // 学生信息
 }
