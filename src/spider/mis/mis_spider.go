@@ -8,7 +8,18 @@ import (
 )
 
 func (this *misTemplate) ClassSchedule() (*bo.ClassScheduleBo, error) {
-	return nil, nil
+	err := this.Login()
+	if err != nil {
+		log.Printf("[MisSpider ClassSchedule Error] %+v\n", err)
+		return nil, err
+	}
+	info, err := this.StudentInfo()
+	res, err := this.Do(http.MethodPost, misClass+info.Uid, nil)
+	if err != nil {
+		log.Printf("[MisSpider ClassSchedule Error] %+v\n", err)
+		return nil, err
+	}
+	return extractClassSchedule(res), nil
 }
 
 func (this *misTemplate) ExamSchedule() (*bo.ExamScheduleBo, error) {

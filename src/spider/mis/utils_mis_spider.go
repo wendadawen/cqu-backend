@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"cqu-backend/src/bo"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/spf13/cast"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"io/ioutil"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -61,4 +63,111 @@ func extractStudentInfo(res string) *bo.StudentInfoBo {
 	student.StudentName = strings.TrimSpace(selection.Eq(1).Text())
 	student.IdNumber = strings.TrimSpace(selection.Eq(12).Text())
 	return student
+}
+
+func extractClassSchedule(res string) *bo.ClassScheduleBo {
+	res = tran2Utf8(res)
+	classSchedule := make([]bo.ClassInfo, 0)
+	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(res))
+	doc.Find("table tr").Next().Next().Each(func(i int, tr *goquery.Selection) {
+		tr.Find("td").Next().Each(func(j int, td *goquery.Selection) {
+			html, _ := td.Html()
+			html = strings.ReplaceAll(html, `<font color="red">`, "")
+			html = strings.ReplaceAll(html, `</font>`, "")
+			for _, item := range strings.Split(html, "<br/><br/>") {
+				if len(strings.TrimSpace(item)) == 0 {
+					continue
+				}
+				split := strings.Split(item, "<br/>")
+				teachClass := "" // 教学班
+				id := ""
+				title := ""
+				week := ""
+				teacher := ""
+				classroom := "null"
+				section := ""
+				paltform := "暂未安排"
+				meetingID := "暂未安排"
+				classQQ := "暂未安排"
+				for _, s := range split {
+					name := strings.Split(s, "：")
+					if name[0] == "班号" {
+						teachClass = name[1]
+					} else if name[0] == "代码" {
+						id = name[1]
+					} else if name[0] == "名称" {
+						title = name[1]
+					} else if name[0] == "周次" {
+						week = name[1]
+					} else if name[0] == "教师" {
+						teacher = name[1]
+					} else if name[0] == "教室" {
+						classroom = name[1]
+					} else if name[0] == "节次" {
+						section = name[1]
+					} else if name[0] == "平台" {
+						paltform = name[1]
+					} else if name[0] == "会议ID/房间ID" {
+						meetingID = strings.Join(name[1:], ":")
+					} else if name[0] == "班级QQ群" {
+						classQQ = strings.Join(name[1:], ":")
+					}
+				}
+				start := cast.ToInt(strings.Split(section, "-")[0])
+				end := cast.ToInt(strings.Split(section, "-")[1])
+				classSchedule = append(classSchedule, bo.ClassInfo{
+					Id:         id,
+					Title:      title,
+					Weeks:      parseWeeks(week),
+					Num:        end - start + 1,
+					Day:        j,
+					Room:       classroom,
+					TeachClass: teachClass,
+					Start:      start,
+					Teacher:    teacher,
+					More:       week + section,
+					Meeting:    paltform + meetingID + "\n班级QQ群:" + classQQ,
+				})
+			}
+		})
+	})
+	return &classSchedule
+}
+
+func parseWeeks(weekStr string) []int {
+	week := make([]int, 0)
+	weekStr = SubTill(weekStr, "周")
+	for _, str := range strings.Split(weekStr, " ") {
+		if strings.Index(str, "-") != -1 {
+			split := strings.Split(str, "-")
+			start, end := cast.ToInt(split[0]), cast.ToInt(split[1])
+			for i := start; i <= end; i++ {
+				week = append(week, i)
+			}
+		} else {
+			w, _ := strconv.Atoi(str)
+			week = append(week, w)
+		}
+	}
+	return week
+}
+
+func SubTill(str string, endStr string) string {
+	rs := []rune(str)
+	length := len(rs)
+	end := UnicodeIndex(str, endStr)
+	if end < 0 || end > length {
+		return ""
+	}
+	return string(rs[:end])
+}
+
+func UnicodeIndex(str, substr string) int {
+	result := strings.Index(str, substr)
+	if result >= 0 {
+		prefix := []byte(str)[0:result]
+		rs := []rune(string(prefix))
+		result = len(rs)
+	}
+	return result
 }
