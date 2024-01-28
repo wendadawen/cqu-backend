@@ -8,7 +8,6 @@ import (
 )
 
 type RankController struct {
-	Ctx            iris.Context
 	RankService    *service.RankService
 	StudentService *service.StudentService
 }
@@ -25,8 +24,8 @@ func NewRankController() *RankController {
 // @tags 成绩排名/rank
 // @Router /rank [post]
 // @param UnionId formData string true "UnionId" default(666)
-func (this *RankController) Post() object.Result {
-	unionId := this.Ctx.FormValue("UnionId")
+func (this *RankController) Post(Ctx iris.Context) object.Result {
+	unionId := Ctx.FormValue("UnionId")
 	if tool.CheckIsEmpty(unionId) {
 		return object.CheckException(object.RequestError)
 	}

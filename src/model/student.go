@@ -1,5 +1,18 @@
 package model
 
+import (
+	"cqu-backend/src/config/datasource"
+	"log"
+)
+
+func init() {
+	engine := datasource.InstanceMaster()
+	err := engine.CreateTables(&Student{})
+	if err != nil {
+		log.Fatalf("[CreatTable Student Error] %+v\n", err)
+	}
+}
+
 type Student struct {
 	UnionId     string `xorm:"not null pk comment('unionId') unique VARCHAR(255)"`
 	StuId       string `xorm:"comment('学号') VARCHAR(255)"`

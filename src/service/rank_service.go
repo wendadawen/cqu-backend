@@ -1,7 +1,7 @@
 package service
 
 import (
-	"cqu-backend/src/dao/model"
+	"cqu-backend/src/model"
 	"cqu-backend/src/spider"
 	"cqu-backend/src/spider/mis"
 	"cqu-backend/src/spider/my"

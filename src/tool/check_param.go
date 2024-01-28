@@ -1,7 +1,7 @@
 package tool
 
 import (
-	"cqu-backend/src/dao/model"
+	"cqu-backend/src/model"
 	"cqu-backend/src/object"
 )
 

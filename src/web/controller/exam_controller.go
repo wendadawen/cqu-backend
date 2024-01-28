@@ -8,7 +8,6 @@ import (
 )
 
 type ExamController struct {
-	Ctx            iris.Context
 	ExamService    *service.ExamService
 	StudentService *service.StudentService
 }
@@ -25,8 +24,8 @@ func NewExamController() *ExamController {
 // @tags 考试安排/exam
 // @Router /exam [post]
 // @param UnionId formData string true "UnionId" default(666)
-func (this *ExamController) Post() object.Result {
-	unionId := this.Ctx.FormValue("UnionId")
+func (this *ExamController) Post(Ctx iris.Context) object.Result {
+	unionId := Ctx.FormValue("UnionId")
 	if tool.CheckIsEmpty(unionId) {
 		return object.CheckException(object.RequestError)
 	}

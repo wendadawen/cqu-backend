@@ -9,7 +9,6 @@ import (
 )
 
 type CardController struct {
-	Ctx         iris.Context
 	StuService  *service.StudentService
 	CardService *service.CardService
 }
@@ -26,9 +25,9 @@ func NewCardController() *CardController {
 // @tags 一卡通/card
 // @Router /card/balance [post]
 // @param UnionId formData string true "UnionId" default(666)
-func (this *CardController) PostBalance() object.Result {
+func (this *CardController) PostBalance(Ctx iris.Context) object.Result {
 	// check unionId
-	unionId := this.Ctx.FormValue("UnionId")
+	unionId := Ctx.FormValue("UnionId")
 	if tool.CheckIsEmpty(unionId) {
 		return object.CheckException(object.RequestError) // 请求参数有误
 	}
@@ -64,8 +63,8 @@ func (this *CardController) PostBalance() object.Result {
 // @tags 一卡通/card
 // @Router /card/fee [post]
 // @param UnionId formData string true "UnionId" default(666)
-func (this *CardController) PostFee() object.Result {
-	unionId := this.Ctx.FormValue("UnionId")
+func (this *CardController) PostFee(Ctx iris.Context) object.Result {
+	unionId := Ctx.FormValue("UnionId")
 	if tool.CheckIsEmpty(unionId) { // 请求参数检查
 		return object.CheckException(object.RequestError)
 	}

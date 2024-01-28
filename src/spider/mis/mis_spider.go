@@ -2,7 +2,7 @@ package mis
 
 import (
 	"cqu-backend/src/bo"
-	"cqu-backend/src/dao/model"
+	"cqu-backend/src/model"
 	"log"
 	"net/http"
 )

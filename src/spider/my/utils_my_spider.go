@@ -3,7 +3,7 @@ package my
 import (
 	"cqu-backend/src/bo"
 	"cqu-backend/src/config"
-	"cqu-backend/src/dao/model"
+	"cqu-backend/src/model"
 	"fmt"
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"

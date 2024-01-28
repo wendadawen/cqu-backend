@@ -2,7 +2,7 @@ package spider
 
 import (
 	"cqu-backend/src/bo"
-	"cqu-backend/src/dao/model"
+	"cqu-backend/src/model"
 )
 
 const (
