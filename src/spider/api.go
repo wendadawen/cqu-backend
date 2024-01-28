@@ -27,4 +27,6 @@ type SpiderAccount struct {
 type StudentUnionImplement interface {
 	ExamSchedule() (*bo.ExamScheduleBo, error) // 考表
 	Rank() (*model.Rank, error)                // 绩点排名
+	AllScore() (*bo.MyScoreResultBo, error)    // 全部成绩
+	CurrentScore() (*bo.MyScoreListBo, error)  // 最近学期成绩
 }

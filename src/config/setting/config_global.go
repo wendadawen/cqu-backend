@@ -12,6 +12,7 @@ var (
 	ServerConfig *viper.Viper
 	MysqlConfig  *viper.Viper
 	ProxyConfig  *viper.Viper
+	CquConfig    *viper.Viper
 )
 
 func init() {
@@ -35,4 +36,5 @@ func setting() {
 	ServerConfig = conf.Sub("server")
 	MysqlConfig = conf.Sub("mysql")
 	ProxyConfig = conf.Sub("proxy")
+	CquConfig = conf.Sub("cqu")
 }

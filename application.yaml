@@ -21,3 +21,6 @@ proxy:
   proxy_server: frp.sramar.com:9999
   proxy_user: xproxy
   proxy_pwd: Xproxy_xuan
+
+cqu:
+  term_current_my: 2023秋

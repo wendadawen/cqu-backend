@@ -36,3 +36,31 @@ func TestRank(t *testing.T) {
 		println(tool.ToString(*Rank))
 	}
 }
+
+func TestAllScore(t *testing.T) {
+	account := spider.SpiderAccount{
+		Account:  test.StudId1,
+		Password: test.CasPwd1,
+	}
+	My, _ := my.NewMyByCas(account)
+	AllScore, err := My.AllScore()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+	} else {
+		println(tool.ToString(*AllScore))
+	}
+}
+
+func TestCurrentScore(t *testing.T) {
+	account := spider.SpiderAccount{
+		Account:  test.StudId1,
+		Password: test.CasPwd1,
+	}
+	My, _ := my.NewMyByCas(account)
+	CurrentScore, err := My.CurrentScore()
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+	} else {
+		println(tool.ToString(*CurrentScore))
+	}
+}
