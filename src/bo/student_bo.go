@@ -10,13 +10,13 @@ const (
 // StudentInfoBo 学生教务学籍信息
 type StudentInfoBo struct {
 	Type                 StudentType // 学生类型
-	studentId            string      // 学号
-	studentName          string      // 姓名
-	gender               string      // 性别
+	StudentId            string      // 学号
+	StudentName          string      // 姓名
+	Gender               string      // 性别
 	Grade                string      // 年级
-	deptName             string      // 学院
-	majorName            string      // 专业
-	className            string      // 班级
+	DeptName             string      // 学院
+	MajorName            string      // 专业
+	ClassName            string      // 班级
 	IdNumber             string      // 身份证号
 	PoliticalStatus      string      // 政治面貌
 	Nationality          string      // 民族
@@ -33,4 +33,5 @@ type StudentInfoBo struct {
 	DepartureTime        string      // 离校时间
 	StuSourceRegion      string      // 生源地
 	StuSourceUnit        string      //生源单位
+	Uid                  string      // 研究生统一编号
 }

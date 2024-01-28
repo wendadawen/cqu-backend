@@ -45,3 +45,20 @@ func extractExam(res string) *bo.ExamScheduleBo {
 	})
 	return &examList
 }
+
+func extractStudentInfo(res string) *bo.StudentInfoBo {
+	res = tran2Utf8(res)
+	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(res))
+	student := new(bo.StudentInfoBo)
+	student.Type = bo.GraduateStudent
+	selection := doc.Find("table.mode19 tr td.mode5")
+	student.Uid = strings.TrimSpace(selection.Eq(0).Text())
+	student.StudentId = strings.TrimSpace(selection.Eq(1).Text())
+	student.DeptName = strings.TrimSpace(selection.Eq(4).Text())
+	student.MajorName = strings.TrimSpace(selection.Eq(5).Text())
+	student.Grade = strings.TrimSpace(selection.Eq(8).Text())
+	selection = doc.Find("table#tab1 table td.mode5")
+	student.StudentName = strings.TrimSpace(selection.Eq(1).Text())
+	student.IdNumber = strings.TrimSpace(selection.Eq(12).Text())
+	return student
+}

@@ -228,7 +228,13 @@ func extractStudentInfo(json string) *bo.StudentInfoBo {
 	data := gjson.Get(json, "data")
 	return &bo.StudentInfoBo{
 		Type:                 bo.UndergraduateStudent,
+		StudentId:            data.Get("studentId").String(),
+		StudentName:          data.Get("studentName").String(),
+		Gender:               data.Get("gender").String(),
 		Grade:                data.Get("grade").String(),
+		DeptName:             data.Get("deptName").String(),
+		MajorName:            data.Get("majorName").String(),
+		ClassName:            data.Get("className").String(),
 		IdNumber:             data.Get("idNumber").String(),
 		PoliticalStatus:      data.Get("politicalStatus").String(),
 		Nationality:          data.Get("nationality").String(),

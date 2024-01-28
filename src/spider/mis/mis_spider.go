@@ -42,6 +42,15 @@ func (this *misTemplate) CurrentScore() (*bo.MyScoreListBo, error) {
 }
 
 func (this *misTemplate) StudentInfo() (*bo.StudentInfoBo, error) {
-
-	return nil, nil
+	err := this.Login()
+	if err != nil {
+		log.Printf("[MisSpider StudentInfo Error] %+v\n", err)
+		return nil, err
+	}
+	res, err := this.Do(http.MethodGet, misInfo, nil)
+	if err != nil {
+		log.Printf("[MisSpider StudentInfo Error] %+v\n", err)
+		return nil, err
+	}
+	return extractStudentInfo(res), nil
 }
