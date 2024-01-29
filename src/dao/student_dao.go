@@ -43,3 +43,10 @@ func (this *StudentDao) Insert(student *model.Student) error {
 	}
 	return nil
 }
+
+func (this *StudentDao) Delete(student *model.Student) {
+	_, err := this.Engine.Delete(student)
+	if err != nil {
+		log.Printf("[StudentDao Delete Error] %+v\n", err)
+	}
+}

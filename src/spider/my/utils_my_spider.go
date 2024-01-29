@@ -2,7 +2,7 @@ package my
 
 import (
 	"cqu-backend/src/bo"
-	"cqu-backend/src/config"
+	"cqu-backend/src/config/setting"
 	"cqu-backend/src/model"
 	"fmt"
 	"github.com/spf13/cast"
@@ -104,7 +104,7 @@ func extractCurrentScore(json string) *bo.MyScoreListBo {
 	data := gjson.Get(json, "data")
 	var myScoreList bo.MyScoreList
 	data.ForEach(func(key, value gjson.Result) bool { //某一学期成绩
-		if key.String() == config.CquConfig.TermCurrentMy {
+		if key.String() == setting.CquConfig.GetString("term_current_my") {
 			courses := value.Get("stuScoreHomePgVoS").Array()
 			for _, course := range courses { //成绩列表
 				s := bo.MyScoreBo{
@@ -124,7 +124,7 @@ func extractCurrentScore(json string) *bo.MyScoreListBo {
 		return true
 	})
 	return &bo.MyScoreListBo{
-		Session: config.CquConfig.TermCurrentMy,
+		Session: setting.CquConfig.GetString("term_current_my"),
 		Scores:  myScoreList,
 		GpaFour: cast.ToString(myScoreList.Gpa(bo.FourGpa)),
 		GpaFive: cast.ToString(myScoreList.Gpa(bo.FiveGpa)),

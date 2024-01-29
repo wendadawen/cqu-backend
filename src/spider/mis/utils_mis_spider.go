@@ -3,7 +3,7 @@ package mis
 import (
 	"bytes"
 	"cqu-backend/src/bo"
-	"cqu-backend/src/config"
+	"cqu-backend/src/config/setting"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cast"
@@ -237,7 +237,7 @@ func extractAllScore(res string) *bo.MyScoreResultBo {
 
 func extractCurrentScore(res string) *bo.MyScoreListBo {
 	res = tran2Utf8(res)
-	var session = config.CquConfig.TermCurrentMis
+	var session = setting.CquConfig.GetString("term_current_mis")
 	var scores bo.MyScoreList
 	document, _ := goquery.NewDocumentFromReader(strings.NewReader(res))
 	document.Find("table#score_sheet tr").Next().Next().Each(func(i int, tr *goquery.Selection) {
