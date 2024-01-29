@@ -2,7 +2,6 @@ package spider
 
 import (
 	"cqu-backend/src/bo"
-	"cqu-backend/src/model"
 )
 
 const (
@@ -26,7 +25,7 @@ type SpiderAccount struct {
 // 本科生和研究生都需要的功能
 type StudentUnionImplement interface {
 	ExamSchedule() (*bo.ExamScheduleBo, error)   // 考表
-	Rank() (*model.Rank, error)                  // 绩点排名
+	Rank() (*bo.Rank, error)                     // 绩点排名
 	AllScore() (*bo.MyScoreResultBo, error)      // 全部成绩
 	CurrentScore() (*bo.MyScoreListBo, error)    // 最近学期成绩
 	ClassSchedule() (*bo.ClassScheduleBo, error) // 课表

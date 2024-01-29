@@ -3,7 +3,6 @@ package my
 import (
 	"cqu-backend/src/bo"
 	"cqu-backend/src/config/setting"
-	"cqu-backend/src/model"
 	"fmt"
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
@@ -36,9 +35,9 @@ func extractExam(json string) *bo.ExamScheduleBo {
 	return &exams
 }
 
-func extractRank(json string) *model.Rank {
+func extractRank(json string) *bo.Rank {
 	data := gjson.Get(json, "data")
-	rank := &model.Rank{
+	rank := &bo.Rank{
 		Gpa:          data.Get("gpa").String(),
 		WeightAvg:    data.Get("weightedAvg").String(),
 		GradeRanking: data.Get("gradeRanking").String(),

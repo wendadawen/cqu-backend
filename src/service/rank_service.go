@@ -1,7 +1,7 @@
 package service
 
 import (
-	"cqu-backend/src/model"
+	"cqu-backend/src/bo"
 	"cqu-backend/src/spider"
 	"cqu-backend/src/spider/mis"
 	"cqu-backend/src/spider/my"
@@ -16,8 +16,8 @@ func NewRankService() *RankService {
 }
 
 // Rank 获取排名
-func (this *RankService) Rank(StuId, CasPwd string) (*model.Rank, error) {
-	Rank := &model.Rank{}
+func (this *RankService) Rank(StuId, CasPwd string) (*bo.Rank, error) {
+	Rank := &bo.Rank{}
 	account := spider.SpiderAccount{
 		Account:  StuId,
 		Password: CasPwd,

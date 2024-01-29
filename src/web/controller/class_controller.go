@@ -19,7 +19,8 @@ func NewClassController() *ClassController {
 	}
 }
 
-// Post @summary 查询课表
+// Post
+// @summary 查询课表
 // @Success 200 {object} object.Result
 // @tags 课表/table
 // @Router /table [post]

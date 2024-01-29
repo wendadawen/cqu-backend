@@ -1,4 +1,4 @@
-package model
+package bo
 
 type Rank struct {
 	StuId        string `xorm:"not null pk VARCHAR(255)" json:"stuId,omitempty"`

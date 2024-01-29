@@ -19,7 +19,8 @@ func NewExamController() *ExamController {
 	}
 }
 
-// Post @summary 查询考试安排
+// Post
+// @summary 查询考试安排
 // @Success 200 {object} object.Result
 // @tags 考试安排/exam
 // @Router /exam [post]

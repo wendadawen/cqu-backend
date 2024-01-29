@@ -20,7 +20,8 @@ func NewCardController() *CardController {
 	}
 }
 
-// PostBalance @summary 查询余额和最近消费记录
+// PostBalance
+// @summary 查询余额和最近消费记录
 // @Success 200 {object} object.Result
 // @tags 一卡通/card
 // @Router /card/balance [post]
@@ -58,7 +59,8 @@ func (this *CardController) PostBalance(Ctx iris.Context) object.Result {
 	return object.DataResult(res)
 }
 
-// PostFee @summary 查询电费
+// PostFee
+// @summary 查询电费
 // @Success 200 {object} object.Result
 // @tags 一卡通/card
 // @Router /card/fee [post]

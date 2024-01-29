@@ -19,7 +19,8 @@ func NewScoreController() *ScoreController {
 	}
 }
 
-// PostAll @summary 查询所有成绩
+// PostAll
+// @summary 查询所有成绩
 // @Success 200 {object} object.Result
 // @tags 考试成绩/score
 // @Router /score/all [post]

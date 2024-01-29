@@ -2,7 +2,6 @@ package my
 
 import (
 	"cqu-backend/src/bo"
-	"cqu-backend/src/model"
 	"log"
 	"net/http"
 )
@@ -22,7 +21,7 @@ func (this *myTemplate) ExamSchedule() (*bo.ExamScheduleBo, error) {
 	return exams, nil
 }
 
-func (this *myTemplate) Rank() (*model.Rank, error) {
+func (this *myTemplate) Rank() (*bo.Rank, error) {
 	err := this.Login()
 	if err != nil {
 		log.Printf("[MySpider Rank Error] %+v\n", err)

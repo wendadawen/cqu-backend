@@ -18,7 +18,8 @@ func NewStudentController() *StudentController {
 	}
 }
 
-// PostTerm @summary 获取学年学期，开学放假日期，当前周数
+// PostTerm
+// @summary 获取学年学期，开学放假日期，当前周数
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/term [post]
@@ -26,7 +27,8 @@ func (this *StudentController) PostTerm(Ctx iris.Context) object.Result {
 	return object.DataResult(this.StudentService.GetTerm())
 }
 
-// PostAccount @summary 绑定情况
+// PostAccount
+// @summary 绑定情况
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/account [post]
@@ -43,7 +45,8 @@ func (this *StudentController) PostAccount(Ctx iris.Context) object.Result {
 	return object.DataResult(account)
 }
 
-// PostBindCas @summary 绑定统一身份认证
+// PostBindCas
+// @summary 绑定统一身份认证
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/bind/cas [post]
@@ -65,7 +68,8 @@ func (this *StudentController) PostBindCas(Ctx iris.Context) object.Result {
 	return object.DataResult(student)
 }
 
-// PostClearCas @summary 清除绑定统一身份认证
+// PostClearCas
+// @summary 清除绑定统一身份认证
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/clear/cas [post]
@@ -79,7 +83,8 @@ func (this *StudentController) PostClearCas(Ctx iris.Context) object.Result {
 	return object.EmptyResult()
 }
 
-// PostBindRoom @summary 绑定房间
+// PostBindRoom
+// @summary 绑定房间
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/bind/room [post]
@@ -105,7 +110,8 @@ func (this *StudentController) PostBindRoom(Ctx iris.Context) object.Result {
 	return object.DataResult(res)
 }
 
-// PostClearRoom @summary 清除绑定房间
+// PostClearRoom
+// @summary 清除绑定房间
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/clear/room [post]
@@ -119,7 +125,8 @@ func (this *StudentController) PostClearRoom(Ctx iris.Context) object.Result {
 	return object.EmptyResult()
 }
 
-// PostClearAll @summary 清除所有绑定
+// PostClearAll
+// @summary 清除所有绑定
 // @Success 200 {object} object.Result
 // @tags 绑定信息/student
 // @Router /student/clear/all [post]

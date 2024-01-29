@@ -2,7 +2,6 @@ package mis
 
 import (
 	"cqu-backend/src/bo"
-	"cqu-backend/src/model"
 	"log"
 	"net/http"
 )
@@ -37,7 +36,7 @@ func (this *misTemplate) ExamSchedule() (*bo.ExamScheduleBo, error) {
 	return exams, nil
 }
 
-func (this *misTemplate) Rank() (*model.Rank, error) {
+func (this *misTemplate) Rank() (*bo.Rank, error) {
 	// 通过查数据库实现
 	return nil, nil
 }

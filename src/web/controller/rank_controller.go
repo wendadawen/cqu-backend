@@ -19,7 +19,8 @@ func NewRankController() *RankController {
 	}
 }
 
-// Post @summary 查询成绩排名，研究生排名仅供参考
+// Post
+// @summary 查询成绩排名，研究生排名仅供参考
 // @Success 200 {object} object.Result
 // @tags 成绩排名/rank
 // @Router /rank [post]

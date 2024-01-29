@@ -11,9 +11,9 @@ import (
 )
 
 // 使用 swag init生成
-// @title template模板
+// @title 重庆大学学生信息后端接口
 // @version 1.0
-// @description Go 语言编程之旅：一起用 Go 做项目
+// @description 重庆大学学生信息后端接口
 func main() {
 	app := iris.Default()
 	app.Configure(iris.WithOptimizations)
