@@ -29,6 +29,10 @@ func (this *RankService) Rank(StuId, CasPwd string) (*model.Rank, error) {
 			return nil, err
 		}
 		Rank, err = Mis.Rank()
+		if err != nil {
+			log.Printf("[RankService Rank Error] Account=%s\n", StuId)
+			return nil, err
+		}
 	} else {
 		My, err := my.NewMyByCas(account)
 		if err != nil {
@@ -36,6 +40,10 @@ func (this *RankService) Rank(StuId, CasPwd string) (*model.Rank, error) {
 			return nil, err
 		}
 		Rank, err = My.Rank()
+		if err != nil {
+			log.Printf("[RankService Rank Error] Account=%s\n", StuId)
+			return nil, err
+		}
 	}
 	return Rank, nil
 }

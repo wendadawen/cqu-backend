@@ -29,6 +29,10 @@ func (this *ExamService) ExamSchedule(StuId, CasPwd string) (*bo.ExamScheduleBo,
 			return nil, err
 		}
 		examSchedule, err = Mis.ExamSchedule()
+		if err != nil {
+			log.Printf("[ExamService ExamSchedule Error] Account=%s\n", StuId)
+			return nil, err
+		}
 	} else {
 		My, err := my.NewMyByCas(account)
 		if err != nil {
@@ -36,6 +40,10 @@ func (this *ExamService) ExamSchedule(StuId, CasPwd string) (*bo.ExamScheduleBo,
 			return nil, err
 		}
 		examSchedule, err = My.ExamSchedule()
+		if err != nil {
+			log.Printf("[ExamService ExamSchedule Error] Account=%s\n", StuId)
+			return nil, err
+		}
 	}
 	return examSchedule, nil
 }
