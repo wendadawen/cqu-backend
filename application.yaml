@@ -4,9 +4,9 @@ server:
 mysql:
   host: localhost
   port: 3306
-  password: wendadawen
-  userName: root
-  databaseName: wecqu
+  password: xxxx
+  userName: xx
+  databaseName: xxx
 
 proxy:
   vpn: false
@@ -17,9 +17,9 @@ proxy:
   cas: false
   my: false
   youth: false
-  proxy_server: frp.sramar.com:9999
-  proxy_user: xproxy
-  proxy_pwd: Xproxy_xuan
+  proxy_server: xxx
+  proxy_user: xxx
+  proxy_pwd: xxx
 
 cqu:
   term_current_my: 2023秋
